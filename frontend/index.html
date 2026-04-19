@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nursing System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        :root {
+            --blue:       #0284c7;
+            --blue-dark:  #0369a1;
+            --blue-light: #e0f2fe;
+            --blue-ring:  rgba(2,132,199,0.18);
+            --red:        #ef4444;
+            --red-dark:   #dc2626;
+            --slate:      #64748b;
+            --slate-dark: #475569;
+            --bg:         #f0f4f8;
+            --card:       #ffffff;
+            --border:     #e2e8f0;
+            --text:       #334155;
+            --text-head:  #0f172a;
+            --green:      #10b981;
+            --radius:     10px;
+            --shadow-sm:  0 2px 6px rgba(0,0,0,0.04);
+            --shadow-md:  0 4px 14px rgba(0,0,0,0.07);
+            --shadow-lg:  0 10px 28px rgba(0,0,0,0.10);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 24px 20px 48px;
+            line-height: 1.6;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* ── Top bar ── */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+        .topbar h1 { color: var(--blue); margin: 0; font-size: 1.6rem; }
+        .topbar-nav { display: flex; gap: 8px; align-items: center; }
+
+        a {
+            color: var(--blue);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 7px 14px;
+            border-radius: 8px;
+            transition: background 0.18s ease;
+            font-size: 0.9rem;
+        }
+        a:hover { background: var(--blue-light); }
+
+        /* ── Panel / Form ── */
+        .panel {
+            background: var(--card);
+            padding: 24px 28px;
+            border-radius: 14px;
+            box-shadow: var(--shadow-md);
+        }
+        .panel h2 { margin: 0 0 18px; color: var(--text-head); font-size: 1.1rem; }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        @media (max-width: 560px) { form { grid-template-columns: 1fr; } }
+
+        .form-row-full { grid-column: 1 / -1; }
+
+        label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--slate-dark);
+            display: block;
+            margin-bottom: 5px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px 13px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text-head);
+            background: #f8fafc;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+        input:focus, textarea:focus {
+            border-color: var(--blue);
+            background: #fff;
+            outline: none;
+            box-shadow: 0 0 0 3px var(--blue-ring);
+        }
+        input::placeholder, textarea::placeholder { color: #94a3b8; }
+        textarea { resize: vertical; min-height: 80px; }
+
+        /* ── Animated Buttons ── */
+        /* Base: all buttons except the transparent search-clear icon */
+        button:not(#search-clear) {
+            position: relative;
+            overflow: hidden;
+            padding: 10px 20px;
+            background: var(--blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+        }
+
+        /* Expanding ripple circle via ::after — no HTML changes needed */
+        button:not(#search-clear)::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0; height: 0;
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 50%;
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.320, 1);
+            pointer-events: none;
+        }
+
+        button:not(#search-clear):hover:not(:disabled) {
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.28);
+        }
+        button:not(#search-clear):hover:not(:disabled)::after {
+            width: 300px; height: 300px;
+            opacity: 1;
+        }
+        button:not(#search-clear):active:not(:disabled) { scale: 0.95; }
+        button:not(#search-clear):disabled { opacity: 0.55; cursor: not-allowed; }
+
+        /* Secondary (grey) */
+        .btn-secondary { background: var(--slate) !important; }
+        .btn-secondary:hover:not(:disabled) {
+            box-shadow: 0 0 0 4px rgba(100, 116, 139, 0.28) !important;
+        }
+
+        /* Danger (red) */
+        .btn-danger { background: var(--red) !important; }
+        .btn-danger:hover:not(:disabled) {
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.28) !important;
+        }
+
+        /* Transparent clear button — keep simple, no ripple */
+        #search-clear {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 2px 5px;
+            border-radius: 4px;
+            transition: color 0.15s;
+            /* positional — inside .search-wrapper */
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: none;
+            box-shadow: none;
+        }
+        #search-clear:hover { color: var(--slate); background: #f1f5f9; }
+
+        /* ── Status ── */
+        .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .status { font-size: 0.9rem; font-weight: 600; }
+        .status.ok  { color: var(--green); }
+        .status.err { color: var(--red); }
+
+        /* ── Toolbar ── */
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 22px 0 16px;
+            background: var(--card);
+            padding: 14px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+        }
+        .search-wrapper {
+            position: relative;
+            flex: 1;
+            min-width: 220px;
+            max-width: 480px;
+        }
+        .search-wrapper svg {
+            position: absolute;
+            left: 11px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            pointer-events: none;
+        }
+        /* FIX #4 UI: clear button for search */
+        #med-search {
+            padding-left: 34px;
+            padding-right: 30px;
+            width: 100%;
+            margin: 0;
+        }
+
+        .hint { color: var(--slate); font-size: 0.88rem; font-weight: 500; }
+
+        /* ── iOS Toggle Switch ── */
+        .unlock-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--slate-dark);
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        /* Hide the real checkbox but keep it accessible */
+        .ios-checkbox {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+
+        /* The pill track */
+        .ios-switch {
+            width: 44px;
+            height: 26px;
+            display: block;
+            flex-shrink: 0;
+            background-color: #e9e9eb;
+            border-radius: 999px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.22s ease-out;
+        }
+
+        /* The white knob */
+        .ios-slider {
+            width: 22px;
+            height: 22px;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.18), 0 1px 2px rgba(0,0,0,0.08);
+            transition: transform 0.22s ease-out;
+            pointer-events: none;
+        }
+
+        /* Checked states */
+        .ios-checkbox:checked + .ios-switch {
+            background-color: var(--blue);
+        }
+        .ios-checkbox:checked + .ios-switch .ios-slider {
+            transform: translateX(18px);
+        }
+
+        /* Focus ring for keyboard accessibility */
+        .ios-checkbox:focus-visible + .ios-switch {
+            outline: 3px solid var(--blue-ring);
+            outline-offset: 2px;
+        }
+
+        /* FIX #4 UI: count pill — only shown when searching */
+        #search-count {
+            display: none;
+            background: var(--blue-light);
+            color: var(--blue-dark);
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 999px;
+        }
+        #search-count.visible { display: inline-block; }
+
+        /* ── Cards ── */
+        #medication-list { margin-top: 4px; }
+
+        /* FIX #5: Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 52px 20px;
+            background: var(--card);
+            border-radius: 14px;
+            box-shadow: var(--shadow-sm);
+        }
+        .empty-state .icon { font-size: 2.8rem; margin-bottom: 10px; }
+        .empty-state p { color: var(--slate); font-size: 0.95rem; margin: 0; }
+        .empty-state strong { color: var(--text-head); }
+
+        /* Skeleton loader */
+        .skeleton {
+            background: var(--card);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-sm);
+            border-left: 6px solid #e2e8f0;
+        }
+        .skel-line {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+            border-radius: 6px;
+            height: 14px;
+            margin-bottom: 10px;
+        }
+        .skel-line.title { height: 18px; width: 50%; }
+        .skel-line.short { width: 35%; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* Medication card */
+        .card {
+            background: var(--card);
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            border-radius: 14px;
+            border-left: 5px solid var(--blue);
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            /* Staggered entrance animation */
+            animation: fadeSlideIn 0.3s ease both;
+        }
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+        .card:focus-within {
+            outline: 2px solid var(--blue-ring);
+            outline-offset: 2px;
+        }
+
+        .med-title { margin: 0; color: var(--text-head); font-size: 1.05rem; cursor: default; }
+
+        .med-details {
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transform: translateY(-4px);
+            transition: max-height 0.35s ease, opacity 0.28s ease, transform 0.28s ease, margin 0.28s ease, padding 0.28s ease;
+            color: var(--text);
+        }
+        .card:hover .med-details,
+        .card.is-open .med-details,
+        .card:focus-within .med-details {
+            max-height: 420px;
+            opacity: 1;
+            transform: translateY(0);
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+        }
+
+        .med-details p {
+            margin: 4px 0;
+            font-size: 0.93rem;
+            line-height: 1.55;
+        }
+        .med-details strong { color: var(--slate-dark); }
+
+        .card-actions { display: flex; gap: 8px; margin-top: 14px; }
+        .card-actions button { font-size: 0.82rem; padding: 7px 14px; }
+
+        .details-hint { display: none; }
+        @media (hover: none) { .details-hint { display: inline; } }
+
+        /* Divider hint in toolbar */
+        .toolbar-divider { width: 1px; height: 24px; background: var(--border); flex-shrink: 0; }
+    </style>
+</head>
+<body>
+
+    <div class="topbar">
+        <div>
+            <h1>🏥 Nursing Management System</h1>
+            <div class="hint" style="margin-top:4px;">Medication Database</div>
+        </div>
+        <div class="topbar-nav">
+            <a href="study.html">Study</a>
+            <a href="quiz.html">Quiz</a>
+        </div>
+    </div>
+
+    <!-- Add / Edit Form -->
+    <div class="panel">
+        <h2 id="form-title">Add Medication</h2>
+        <form id="add-medication-form" autocomplete="off">
+            <div>
+                <label for="med-name">Name</label>
+                <input id="med-name" name="name" placeholder="e.g., Amoxicillin" required />
+            </div>
+            <div>
+                <label for="med-dosage">Dosage</label>
+                <input id="med-dosage" name="dosage" placeholder="e.g., 500mg" required />
+            </div>
+            <div class="form-row-full">
+                <label for="med-usage">Usage</label>
+                <input id="med-usage" name="usage" placeholder="e.g., Treat bacterial infections" required />
+            </div>
+            <div class="form-row-full">
+                <label for="med-side-effects">Side Effects</label>
+                <textarea id="med-side-effects" name="side_effects" placeholder="e.g., nausea, diarrhea"></textarea>
+            </div>
+            <div class="form-row-full actions">
+                <button type="submit" id="submit-btn">Save Medication</button>
+                <button id="cancel-edit" class="btn-secondary" type="button" style="display:none;">Cancel</button>
+                <span id="add-status" class="status" aria-live="polite"></span>
+            </div>
+        </form>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <button onclick="loadMedications()" title="Reload list">↺ Reload</button>
+        <div class="toolbar-divider"></div>
+        <div class="search-wrapper">
+            <!-- Search icon -->
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input id="med-search" class="search" placeholder="Search name, usage, dosage…" />
+            <button id="search-clear" title="Clear search" type="button">✕</button>
+        </div>
+        <!-- FIX #4: count pill, only shown when actively searching -->
+        <span id="search-count"></span>
+        <div class="toolbar-divider"></div>
+        <label class="unlock-label" title="Show Edit and Delete buttons on each card">
+            <input id="unlock-editing" class="ios-checkbox" type="checkbox" />
+            <span class="ios-switch">
+                <span class="ios-slider"></span>
+            </span>
+            Unlock editing
+        </label>
+        <span class="hint" style="margin-left:auto;">
+            Hover a card to see details.<span class="details-hint"> Tap to toggle.</span>
+        </span>
+    </div>
+
+    <div id="medication-list"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

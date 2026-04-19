@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study – Nursing System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    :root {
+      --teal:        #0d9488;
+      --teal-dark:   #0f766e;
+      --teal-deep:   #115e59;
+      --teal-light:  #ccfbf1;
+      --teal-ring:   rgba(13,148,136,0.18);
+      --teal-bg:     #f0fdfa;
+      --slate:       #64748b;
+      --slate-dark:  #475569;
+      --border:      #e2e8f0;
+      --text:        #334155;
+      --text-head:   #0f172a;
+      --card:        #ffffff;
+      --shadow-sm:   0 2px 6px rgba(0,0,0,0.04);
+      --shadow-md:   0 4px 14px rgba(0,0,0,0.07);
+      --shadow-lg:   0 10px 28px rgba(0,0,0,0.10);
+      --radius:      12px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      padding: 24px 20px 48px;
+      background-color: var(--teal-bg);
+      color: var(--text);
+      line-height: 1.6;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+    .topbar h1 { color: var(--teal); margin: 0; font-size: 1.6rem; }
+    .topbar-nav { display: flex; gap: 8px; }
+
+    a {
+      color: var(--teal);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      transition: background 0.18s;
+    }
+    a:hover { background: var(--teal-light); }
+
+    /* ── Layout ── */
+    .layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+
+    /* ── Panels ── */
+    .panel {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+    }
+    .sidebar-panel { padding: 18px; }
+    .detail-panel  { padding: 24px 28px; }
+
+    /* ── Sidebar top row ── */
+    .sidebar-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .pill {
+      font-size: 0.82rem;
+      font-weight: 700;
+      background: var(--teal-light);
+      color: var(--teal-dark);
+      border: none;
+      padding: 5px 12px;
+      border-radius: 999px;
+      letter-spacing: 0.2px;
+    }
+
+    /* ── Search ── */
+    .search-wrapper {
+      position: relative;
+      margin-bottom: 4px;
+    }
+    .search-wrapper svg {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      pointer-events: none;
+    }
+    #study-search {
+      width: 100%;
+      padding: 9px 32px 9px 32px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      background: #f8fafc;
+      color: var(--text-head);
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    #study-search:focus {
+      border-color: var(--teal);
+      background: white;
+      outline: none;
+      box-shadow: 0 0 0 3px var(--teal-ring);
+    }
+    #study-search::placeholder { color: #94a3b8; }
+
+    #search-clear {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 0.95rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: none;
+    }
+    #search-clear:hover { color: var(--slate); background: #f1f5f9; box-shadow: none; }
+
+    /* FIX #2: count only shown when searching */
+    #search-count {
+      font-size: 0.8rem;
+      color: var(--slate);
+      min-height: 18px;
+      margin-top: 6px;
+      display: block;
+    }
+
+    /* ── Medication list ── */
+    .list {
+      max-height: 62vh;
+      overflow-y: auto;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      margin-top: 12px;
+      background: white;
+    }
+    .list::-webkit-scrollbar { width: 4px; }
+    .list::-webkit-scrollbar-track { background: transparent; }
+    .list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+    .item {
+      padding: 11px 14px;
+      border-bottom: 1px solid #f1f5f9;
+      cursor: pointer;
+      font-size: 0.92rem;
+      color: var(--text);
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .item:last-child { border-bottom: none; }
+    .item:hover { background: #f8fafc; }
+    .item.active {
+      background: var(--teal-light);
+      border-left: 4px solid var(--teal);
+      padding-left: 10px;
+      font-weight: 700;
+      color: var(--teal-dark);
+    }
+
+    /* Skeleton for list */
+    .skel-item {
+      padding: 13px 14px;
+      border-bottom: 1px solid #f8fafc;
+    }
+    .skel-line {
+      background: linear-gradient(90deg, #f1f5f9 25%, #e8edf3 50%, #f1f5f9 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 6px;
+      height: 12px;
+    }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* FIX #8: Empty state */
+    .empty-list {
+      text-align: center;
+      padding: 32px 16px;
+      color: var(--slate);
+      font-size: 0.88rem;
+    }
+    .empty-list .icon { font-size: 2rem; margin-bottom: 8px; }
+
+    /* ── Animated Buttons ── */
+    button:not(#search-clear) {
+      position: relative;
+      overflow: hidden;
+      padding: 9px 16px;
+      background: var(--teal);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+    }
+
+    button:not(#search-clear)::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 0; height: 0;
+      background: rgba(255, 255, 255, 0.18);
+      border-radius: 50%;
+      opacity: 0;
+      transition: all 0.8s cubic-bezier(0.23, 1, 0.320, 1);
+      pointer-events: none;
+    }
+
+    button:not(#search-clear):hover:not(:disabled) {
+      box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.28);
+    }
+    button:not(#search-clear):hover:not(:disabled)::after {
+      width: 300px; height: 300px;
+      opacity: 1;
+    }
+    button:not(#search-clear):active:not(:disabled) { scale: 0.95; }
+    button:not(#search-clear):disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-secondary { background: var(--slate) !important; }
+    .btn-secondary:hover:not(:disabled) {
+      box-shadow: 0 0 0 4px rgba(100, 116, 139, 0.28) !important;
+    }
+
+    /* Transparent clear — no ripple */
+    #search-clear {
+      position: absolute;
+      right: 6px; top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 0.95rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: none;
+      box-shadow: none;
+      transition: color 0.15s;
+    }
+    #search-clear:hover { color: var(--slate); background: #f1f5f9; }
+
+
+    /* ── Detail panel ── */
+    .detail-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .card-title {
+      margin: 0;
+      color: var(--teal-dark);
+      font-size: 1.5rem;
+      line-height: 1.3;
+    }
+    .card-sub {
+      font-size: 0.85rem;
+      color: var(--slate);
+      margin-top: 4px;
+    }
+
+    /* Hide toggles */
+    .toggles {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--slate-dark);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .toggle-label input[type=checkbox] {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--teal);
+      cursor: pointer;
+    }
+
+    /* Nav row (Prev / Next) */
+    .nav-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .nav-row span {
+      font-size: 0.8rem;
+      color: var(--slate);
+      font-weight: 500;
+      min-width: 70px;
+      text-align: center;
+    }
+
+    /* ── Sections ── */
+    .section {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid #f1f5f9;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .section h3 {
+      margin: 0;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--teal-deep);
+    }
+    .section-body {
+      color: var(--text);
+      font-size: 0.95rem;
+      line-height: 1.65;
+      min-height: 24px;
+    }
+    .section-body.placeholder { color: #94a3b8; font-style: italic; }
+
+    /* FIX: Blur study effect */
+    .hidden {
+      filter: blur(6px);
+      user-select: none;
+      transition: filter 0.3s ease;
+      opacity: 0.6;
+    }
+
+    /* Welcome placeholder */
+    .welcome {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .welcome .icon { font-size: 3rem; margin-bottom: 12px; }
+    .welcome p { color: var(--slate); font-size: 0.95rem; margin: 0; }
+
+    .hint { font-size: 0.88rem; color: var(--slate); }
+    .muted { color: var(--slate-dark); }
+    .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div>
+      <h1>📚 Nursing Management System</h1>
+      <div class="hint" style="margin-top:4px;">Study Interface</div>
+    </div>
+    <div class="topbar-nav">
+      <a href="index.html">Medications</a>
+      <a href="quiz.html">Quiz</a>
+    </div>
+  </div>
+
+  <div class="layout">
+
+    <!-- ── Sidebar ── -->
+    <div class="panel sidebar-panel">
+      <div class="sidebar-top">
+        <div class="pill" id="count-pill">0 meds</div>
+        <button id="random" type="button">🎲 Random</button>
+      </div>
+
+      <div class="search-wrapper">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input id="study-search" placeholder="Search name, usage, dosage…" />
+        <button id="search-clear" title="Clear" type="button">✕</button>
+      </div>
+      <div id="search-count"></div>
+
+      <div class="list" id="med-list"></div>
+    </div>
+
+    <!-- ── Detail card ── -->
+    <div class="panel detail-panel">
+      <div class="detail-top">
+        <div>
+          <h2 class="card-title" id="card-name">Pick a medication</h2>
+          <div class="card-sub" id="card-sub">Select from the list or press Random.</div>
+        </div>
+        <div class="toggles">
+          <label class="toggle-label">
+            <input id="hide-usage" type="checkbox" /> Hide usage
+          </label>
+          <label class="toggle-label">
+            <input id="hide-dosage" type="checkbox" /> Hide dosage
+          </label>
+          <label class="toggle-label">
+            <input id="hide-se" type="checkbox" /> Hide side effects
+          </label>
+          <button id="reveal" type="button" class="btn-secondary">Reveal all</button>
+        </div>
+      </div>
+
+      <!-- Prev / Next navigation -->
+      <div class="nav-row">
+        <button id="btn-prev" type="button" class="btn-secondary" disabled>← Prev</button>
+        <span id="nav-pos">—</span>
+        <button id="btn-next" type="button" class="btn-secondary" disabled>Next →</button>
+      </div>
+
+      <div id="detail-body">
+        <!-- Welcome state — replaced by JS when a med is selected -->
+        <div class="welcome">
+          <div class="icon">💊</div>
+          <p>Select a medication from the list<br>or press <strong>Random</strong> to get started.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="study.js"></script>
+</body>
+</html>
