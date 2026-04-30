@@ -5,457 +5,289 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Study – Nursing System</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --teal:        #0d9488;
       --teal-dark:   #0f766e;
       --teal-deep:   #115e59;
       --teal-light:  #ccfbf1;
-      --teal-ring:   rgba(13,148,136,0.18);
-      --teal-bg:     #f0fdfa;
+      --teal-ring:   rgba(13,148,136,0.2);
+      --teal-glow:   rgba(13,148,136,0.22);
       --slate:       #64748b;
       --slate-dark:  #475569;
-      --border:      #e2e8f0;
-      --text:        #334155;
-      --text-head:   #0f172a;
+      --bg:          #f4f6fb;
       --card:        #ffffff;
-      --shadow-sm:   0 2px 6px rgba(0,0,0,0.04);
-      --shadow-md:   0 4px 14px rgba(0,0,0,0.07);
-      --shadow-lg:   0 10px 28px rgba(0,0,0,0.10);
-      --radius:      12px;
+      --border:      #e4e9f0;
+      --text:        #2d3a4a;
+      --text-head:   #0f172a;
+      --shadow-sm:   0 2px 8px rgba(0,0,0,0.05);
+      --shadow-md:   0 6px 20px rgba(0,0,0,0.08);
+      --shadow-lg:   0 16px 40px rgba(0,0,0,0.12);
     }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      padding: 24px 20px 48px;
-      background-color: var(--teal-bg);
-      color: var(--text);
-      line-height: 1.6;
-      margin: 0;
-      min-height: 100vh;
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+    /* ── Hero ── */
+    .hero {
+      background:linear-gradient(135deg,#0f172a 0%,#0f3d38 55%,#0d4f47 100%);
+      padding:0 40px 60px; position:relative; overflow:hidden;
+    }
+    .hero::before {
+      content:''; position:absolute; inset:0;
+      background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),
+                       linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);
+      background-size:40px 40px; pointer-events:none;
+    }
+    .hero::after {
+      content:''; position:absolute; top:-60px; right:-40px; width:300px; height:300px;
+      background:radial-gradient(circle,rgba(13,148,136,0.22) 0%,transparent 70%); pointer-events:none;
+    }
+    .hero-orb2 {
+      position:absolute; bottom:-60px; left:15%; width:220px; height:220px;
+      background:radial-gradient(circle,rgba(2,132,199,0.12) 0%,transparent 70%); pointer-events:none;
     }
 
-    /* ── Top bar ── */
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 22px;
+    .nav { display:flex; justify-content:space-between; align-items:center; padding:20px 0 24px; position:relative; z-index:1; }
+    .logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+    .logo-icon {
+      width:36px; height:36px; background:linear-gradient(135deg,#0284c7,#0d9488);
+      border-radius:9px; display:flex; align-items:center; justify-content:center;
+      font-size:1.1rem; box-shadow:0 4px 12px rgba(13,148,136,0.35);
     }
-    .topbar h1 { color: var(--teal); margin: 0; font-size: 1.6rem; }
-    .topbar-nav { display: flex; gap: 8px; }
-
-    a {
-      color: var(--teal);
-      text-decoration: none;
-      font-weight: 600;
-      padding: 7px 14px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      transition: background 0.18s;
+    .logo-text { font-family:'DM Serif Display',serif; font-size:1.05rem; color:#fff; }
+    .logo-text span { color:#5eead4; }
+    .nav-links { display:flex; gap:4px; }
+    .nav-links a {
+      color:rgba(255,255,255,0.6); text-decoration:none; font-size:0.85rem;
+      font-weight:500; padding:7px 13px; border-radius:8px; transition:all 0.2s;
     }
-    a:hover { background: var(--teal-light); }
+    .nav-links a:hover { background:rgba(255,255,255,0.1); color:#fff; }
+    .nav-links a.active { background:rgba(255,255,255,0.14); color:#fff; }
 
-    /* ── Layout ── */
+    .hero-body { position:relative; z-index:1; padding-top:8px; }
+    .hero-body h1 { font-family:'DM Serif Display',serif; font-size:2rem; color:#fff; margin-bottom:6px; }
+    .hero-body h1 span { color:#5eead4; }
+    .hero-body p { color:rgba(255,255,255,0.5); font-size:0.88rem; }
+
+    /* ── Main ── */
+    .main { max-width:1100px; margin:0 auto; padding:0 40px 60px; }
+    @media (max-width:680px) { .hero { padding:0 20px 52px; } .main { padding:0 20px 48px; } }
+
     .layout {
-      display: grid;
-      grid-template-columns: 300px 1fr;
-      gap: 20px;
-      align-items: start;
+      display:grid; grid-template-columns:290px 1fr; gap:20px;
+      align-items:start; margin-top:-36px; position:relative; z-index:10;
     }
-    @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+    @media (max-width:860px) { .layout { grid-template-columns:1fr; } }
 
-    /* ── Panels ── */
-    .panel {
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-md);
+    /* ── Sidebar ── */
+    .sidebar-panel {
+      background:var(--card); border-radius:16px; box-shadow:var(--shadow-md);
+      border:1px solid var(--border); padding:18px; animation:riseUp 0.45s ease both;
     }
-    .sidebar-panel { padding: 18px; }
-    .detail-panel  { padding: 24px 28px; }
+    @keyframes riseUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 
-    /* ── Sidebar top row ── */
-    .sidebar-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-    }
+    .sidebar-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
     .pill {
-      font-size: 0.82rem;
-      font-weight: 700;
-      background: var(--teal-light);
-      color: var(--teal-dark);
-      border: none;
-      padding: 5px 12px;
-      border-radius: 999px;
-      letter-spacing: 0.2px;
+      font-size:0.78rem; font-weight:700; background:var(--teal-light); color:var(--teal-dark);
+      border:none; padding:5px 12px; border-radius:999px; letter-spacing:0.2px;
     }
 
-    /* ── Search ── */
-    .search-wrapper {
-      position: relative;
-      margin-bottom: 4px;
-    }
-    .search-wrapper svg {
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #94a3b8;
-      pointer-events: none;
-    }
+    .search-wrapper { position:relative; margin-bottom:4px; }
+    .search-wrapper svg { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#94a3b8; pointer-events:none; }
     #study-search {
-      width: 100%;
-      padding: 9px 32px 9px 32px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-      background: #f8fafc;
-      color: var(--text-head);
-      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      width:100%; padding:9px 32px 9px 32px; border:1.5px solid var(--border); border-radius:8px;
+      font-family:'DM Sans',sans-serif; font-size:0.88rem; background:#f8fafc; color:var(--text-head);
+      transition:border-color 0.2s, box-shadow 0.2s, background 0.2s;
     }
-    #study-search:focus {
-      border-color: var(--teal);
-      background: white;
-      outline: none;
-      box-shadow: 0 0 0 3px var(--teal-ring);
-    }
-    #study-search::placeholder { color: #94a3b8; }
+    #study-search:focus { border-color:var(--teal); background:#fff; outline:none; box-shadow:0 0 0 3px var(--teal-ring); }
+    #study-search::placeholder { color:#94a3b8; }
 
     #search-clear {
-      position: absolute;
-      right: 6px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: #94a3b8;
-      cursor: pointer;
-      font-size: 0.95rem;
-      padding: 2px 6px;
-      border-radius: 4px;
-      display: none;
+      position:absolute; right:6px; top:50%; transform:translateY(-50%);
+      background:none; border:none; color:#94a3b8; cursor:pointer;
+      font-size:0.9rem; padding:2px 6px; border-radius:4px; display:none; transition:color 0.15s;
     }
-    #search-clear:hover { color: var(--slate); background: #f1f5f9; box-shadow: none; }
+    #search-clear:hover { color:var(--slate); background:#f1f5f9; }
 
-    /* FIX #2: count only shown when searching */
-    #search-count {
-      font-size: 0.8rem;
-      color: var(--slate);
-      min-height: 18px;
-      margin-top: 6px;
-      display: block;
-    }
+    #search-count { font-size:0.78rem; color:var(--slate); min-height:16px; margin-top:5px; display:block; }
 
-    /* ── Medication list ── */
     .list {
-      max-height: 62vh;
-      overflow-y: auto;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      margin-top: 12px;
-      background: white;
+      max-height:60vh; overflow-y:auto; border:1.5px solid var(--border);
+      border-radius:10px; margin-top:12px; background:white;
     }
-    .list::-webkit-scrollbar { width: 4px; }
-    .list::-webkit-scrollbar-track { background: transparent; }
-    .list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .list::-webkit-scrollbar { width:4px; }
+    .list::-webkit-scrollbar-track { background:transparent; }
+    .list::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:4px; }
 
     .item {
-      padding: 11px 14px;
-      border-bottom: 1px solid #f1f5f9;
-      cursor: pointer;
-      font-size: 0.92rem;
-      color: var(--text);
-      transition: background 0.15s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      padding:10px 13px; border-bottom:1px solid #f1f5f9; cursor:pointer;
+      font-size:0.88rem; color:var(--text); transition:background 0.15s;
     }
-    .item:last-child { border-bottom: none; }
-    .item:hover { background: #f8fafc; }
-    .item.active {
-      background: var(--teal-light);
-      border-left: 4px solid var(--teal);
-      padding-left: 10px;
-      font-weight: 700;
-      color: var(--teal-dark);
-    }
+    .item:last-child { border-bottom:none; }
+    .item:hover { background:#f8fafc; }
+    .item.active { background:var(--teal-light); border-left:4px solid var(--teal); padding-left:9px; font-weight:700; color:var(--teal-dark); }
 
-    /* Skeleton for list */
-    .skel-item {
-      padding: 13px 14px;
-      border-bottom: 1px solid #f8fafc;
-    }
+    .skel-item { padding:12px 13px; border-bottom:1px solid #f8fafc; }
     .skel-line {
-      background: linear-gradient(90deg, #f1f5f9 25%, #e8edf3 50%, #f1f5f9 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.4s infinite;
-      border-radius: 6px;
-      height: 12px;
+      background:linear-gradient(90deg,#f1f5f9 25%,#e8edf3 50%,#f1f5f9 75%);
+      background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:6px; height:11px;
     }
-    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-    /* FIX #8: Empty state */
-    .empty-list {
-      text-align: center;
-      padding: 32px 16px;
-      color: var(--slate);
-      font-size: 0.88rem;
-    }
-    .empty-list .icon { font-size: 2rem; margin-bottom: 8px; }
+    .empty-list { text-align:center; padding:28px 16px; color:var(--slate); font-size:0.85rem; }
+    .empty-list .icon { font-size:1.8rem; margin-bottom:8px; }
 
-    /* ── Animated Buttons ── */
+    /* ── Buttons ── */
     button:not(#search-clear) {
-      position: relative;
-      overflow: hidden;
-      padding: 9px 16px;
-      background: var(--teal);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.88rem;
-      font-family: 'Inter', sans-serif;
-      cursor: pointer;
-      transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+      position:relative; overflow:hidden; padding:9px 16px; background:var(--teal);
+      color:white; border:none; border-radius:8px; font-weight:700; font-size:0.85rem;
+      font-family:'DM Sans',sans-serif; cursor:pointer; white-space:nowrap;
+      transition:all 0.6s cubic-bezier(0.23,1,0.32,1);
     }
-
     button:not(#search-clear)::after {
-      content: '';
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 0; height: 0;
-      background: rgba(255, 255, 255, 0.18);
-      border-radius: 50%;
-      opacity: 0;
-      transition: all 0.8s cubic-bezier(0.23, 1, 0.320, 1);
-      pointer-events: none;
+      content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+      width:0; height:0; background:rgba(255,255,255,0.18); border-radius:50%; opacity:0;
+      transition:all 0.8s cubic-bezier(0.23,1,0.32,1); pointer-events:none;
     }
-
-    button:not(#search-clear):hover:not(:disabled) {
-      box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.28);
-    }
-    button:not(#search-clear):hover:not(:disabled)::after {
-      width: 300px; height: 300px;
-      opacity: 1;
-    }
-    button:not(#search-clear):active:not(:disabled) { scale: 0.95; }
-    button:not(#search-clear):disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .btn-secondary { background: var(--slate) !important; }
-    .btn-secondary:hover:not(:disabled) {
-      box-shadow: 0 0 0 4px rgba(100, 116, 139, 0.28) !important;
-    }
-
-    /* Transparent clear — no ripple */
-    #search-clear {
-      position: absolute;
-      right: 6px; top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: #94a3b8;
-      cursor: pointer;
-      font-size: 0.95rem;
-      padding: 2px 6px;
-      border-radius: 4px;
-      display: none;
-      box-shadow: none;
-      transition: color 0.15s;
-    }
-    #search-clear:hover { color: var(--slate); background: #f1f5f9; }
-
+    button:not(#search-clear):hover:not(:disabled) { box-shadow:0 0 0 4px var(--teal-glow); }
+    button:not(#search-clear):hover:not(:disabled)::after { width:280px; height:280px; opacity:1; }
+    button:not(#search-clear):active:not(:disabled) { scale:0.95; }
+    button:not(#search-clear):disabled { opacity:0.5; cursor:not-allowed; }
+    .btn-secondary { background:var(--slate) !important; }
+    .btn-secondary:hover:not(:disabled) { box-shadow:0 0 0 4px rgba(100,116,139,0.28) !important; }
 
     /* ── Detail panel ── */
+    .detail-panel {
+      background:var(--card); border-radius:16px; box-shadow:var(--shadow-md);
+      border:1px solid var(--border); padding:28px 32px; animation:riseUp 0.45s 0.08s ease both;
+    }
+
     .detail-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 6px;
+      display:flex; justify-content:space-between; align-items:flex-start;
+      gap:16px; flex-wrap:wrap; padding-bottom:18px; border-bottom:1px solid var(--border); margin-bottom:6px;
     }
+    .card-title { font-family:'DM Serif Display',serif; font-size:1.7rem; color:var(--teal-dark); line-height:1.25; }
+    .card-sub { font-size:0.82rem; color:var(--slate); margin-top:5px; }
 
-    .card-title {
-      margin: 0;
-      color: var(--teal-dark);
-      font-size: 1.5rem;
-      line-height: 1.3;
-    }
-    .card-sub {
-      font-size: 0.85rem;
-      color: var(--slate);
-      margin-top: 4px;
-    }
-
-    /* Hide toggles */
-    .toggles {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
+    /* Toggles — dosage removed */
+    .toggles { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:4px; }
     .toggle-label {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--slate-dark);
-      cursor: pointer;
-      user-select: none;
-      white-space: nowrap;
+      display:flex; align-items:center; gap:5px; font-size:0.8rem; font-weight:600;
+      color:var(--slate-dark); cursor:pointer; user-select:none; white-space:nowrap;
+      background:#f8fafc; border:1px solid var(--border); border-radius:7px; padding:5px 10px;
+      transition:background 0.15s, border-color 0.15s;
     }
-    .toggle-label input[type=checkbox] {
-      width: 14px;
-      height: 14px;
-      accent-color: var(--teal);
-      cursor: pointer;
-    }
+    .toggle-label:hover { background:var(--teal-light); border-color:var(--teal); }
+    .toggle-label input[type=checkbox] { width:13px; height:13px; accent-color:var(--teal); cursor:pointer; }
 
-    /* Nav row (Prev / Next) */
-    .nav-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      margin-top: 10px;
-    }
+    .nav-row { display:flex; gap:8px; align-items:center; margin-top:14px; }
     .nav-row span {
-      font-size: 0.8rem;
-      color: var(--slate);
-      font-weight: 500;
-      min-width: 70px;
-      text-align: center;
+      font-size:0.78rem; color:var(--slate); font-weight:600; min-width:70px; text-align:center;
+      background:#f8fafc; border:1px solid var(--border); border-radius:6px; padding:4px 8px;
     }
 
-    /* ── Sections ── */
-    .section {
-      margin-top: 18px;
-      padding-top: 16px;
-      border-top: 1px solid #f1f5f9;
-    }
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-    .section h3 {
-      margin: 0;
-      font-size: 0.78rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: var(--teal-deep);
+    /* Sections — sized to accommodate bullet lists */
+    .section { margin-top:20px; }
+    .section-label {
+      font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.7px;
+      color:var(--teal-deep); background:var(--teal-light);
+      display:inline-block; padding:2px 9px; border-radius:5px; margin-bottom:10px;
     }
     .section-body {
-      color: var(--text);
-      font-size: 0.95rem;
-      line-height: 1.65;
-      min-height: 24px;
+      color:var(--text); font-size:0.93rem; line-height:1.7;
+      padding:12px 16px; background:#f8fafc; border-radius:8px; border:1px solid var(--border);
+      min-height:42px;
     }
-    .section-body.placeholder { color: #94a3b8; font-style: italic; }
+    .section-body ul { margin-top:0; }
+    .section-body.placeholder { color:#94a3b8; font-style:italic; }
 
-    /* FIX: Blur study effect */
-    .hidden {
-      filter: blur(6px);
-      user-select: none;
-      transition: filter 0.3s ease;
-      opacity: 0.6;
-    }
+    /* Blur-to-reveal */
+    .hidden { filter:blur(6px); user-select:none; transition:filter 0.3s ease; opacity:0.5; }
 
-    /* Welcome placeholder */
-    .welcome {
-      text-align: center;
-      padding: 60px 20px;
-    }
-    .welcome .icon { font-size: 3rem; margin-bottom: 12px; }
-    .welcome p { color: var(--slate); font-size: 0.95rem; margin: 0; }
+    .welcome { text-align:center; padding:64px 20px; }
+    .welcome .icon { font-size:3rem; margin-bottom:16px; opacity:0.6; }
+    .welcome h3 { font-family:'DM Serif Display',serif; font-size:1.3rem; color:var(--text-head); margin-bottom:6px; }
+    .welcome p { color:var(--slate); font-size:0.9rem; }
 
-    .hint { font-size: 0.88rem; color: var(--slate); }
-    .muted { color: var(--slate-dark); }
-    .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .hint { color:var(--slate); font-size:0.83rem; font-weight:500; }
   </style>
 </head>
 <body>
 
-  <div class="topbar">
-    <div>
-      <h1>📚 Nursing Management System</h1>
-      <div class="hint" style="margin-top:4px;">Study Interface</div>
+  <div class="hero">
+    <div class="hero-orb2"></div>
+    <div class="nav">
+      <a href="dashboard.html" class="logo">
+        <div class="logo-icon">🏥</div>
+        <div class="logo-text">Nursing <span>System</span></div>
+      </a>
+      <nav class="nav-links">
+        <a href="dashboard.html">🏠 Home</a>
+        <a href="index.html">💊 Medications</a>
+        <a href="study.html" class="active">📚 Study</a>
+        <a href="quiz.html">🧠 Quiz</a>
+      </nav>
     </div>
-    <div class="topbar-nav">
-      <a href="index.html">Medications</a>
-      <a href="quiz.html">Quiz</a>
+    <div class="hero-body">
+      <h1>📚 <span>Study</span> Interface</h1>
+      <p>Browse medications and self-test with blur-to-reveal mode.</p>
     </div>
   </div>
 
-  <div class="layout">
+  <div class="main">
+    <div class="layout">
 
-    <!-- ── Sidebar ── -->
-    <div class="panel sidebar-panel">
-      <div class="sidebar-top">
-        <div class="pill" id="count-pill">0 meds</div>
-        <button id="random" type="button">🎲 Random</button>
+      <!-- Sidebar -->
+      <div class="sidebar-panel">
+        <div class="sidebar-top">
+          <div class="pill" id="count-pill">0 meds</div>
+          <button id="random" type="button">🎲 Random</button>
+        </div>
+        <div class="search-wrapper">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input id="study-search" placeholder="Search medications…" />
+          <button id="search-clear" title="Clear" type="button">✕</button>
+        </div>
+        <div id="search-count"></div>
+        <div class="list" id="med-list"></div>
       </div>
 
-      <div class="search-wrapper">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-        </svg>
-        <input id="study-search" placeholder="Search name, usage, dosage…" />
-        <button id="search-clear" title="Clear" type="button">✕</button>
-      </div>
-      <div id="search-count"></div>
+      <!-- Detail card -->
+      <div class="detail-panel">
+        <div class="detail-top">
+          <div>
+            <h2 class="card-title" id="card-name">Pick a medication</h2>
+            <div class="card-sub" id="card-sub">Select from the list or press Random.</div>
+          </div>
+          <!-- Dosage toggle removed -->
+          <div class="toggles">
+            <label class="toggle-label"><input id="hide-indications" type="checkbox" /> 👁 Indications</label>
+            <label class="toggle-label"><input id="hide-se" type="checkbox" /> 👁 Side effects</label>
+            <button id="reveal" type="button" class="btn-secondary">✨ Reveal all</button>
+          </div>
+        </div>
 
-      <div class="list" id="med-list"></div>
+        <div class="nav-row">
+          <button id="btn-prev" type="button" class="btn-secondary" disabled>← Prev</button>
+          <span id="nav-pos">—</span>
+          <button id="btn-next" type="button" class="btn-secondary" disabled>Next →</button>
+        </div>
+
+        <div id="detail-body">
+          <div class="welcome">
+            <div class="icon">💊</div>
+            <h3>Ready to study?</h3>
+            <p>Select a medication from the list<br>or press <strong>Random</strong> to get started.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
-
-    <!-- ── Detail card ── -->
-    <div class="panel detail-panel">
-      <div class="detail-top">
-        <div>
-          <h2 class="card-title" id="card-name">Pick a medication</h2>
-          <div class="card-sub" id="card-sub">Select from the list or press Random.</div>
-        </div>
-        <div class="toggles">
-          <label class="toggle-label">
-            <input id="hide-usage" type="checkbox" /> Hide usage
-          </label>
-          <label class="toggle-label">
-            <input id="hide-dosage" type="checkbox" /> Hide dosage
-          </label>
-          <label class="toggle-label">
-            <input id="hide-se" type="checkbox" /> Hide side effects
-          </label>
-          <button id="reveal" type="button" class="btn-secondary">Reveal all</button>
-        </div>
-      </div>
-
-      <!-- Prev / Next navigation -->
-      <div class="nav-row">
-        <button id="btn-prev" type="button" class="btn-secondary" disabled>← Prev</button>
-        <span id="nav-pos">—</span>
-        <button id="btn-next" type="button" class="btn-secondary" disabled>Next →</button>
-      </div>
-
-      <div id="detail-body">
-        <!-- Welcome state — replaced by JS when a med is selected -->
-        <div class="welcome">
-          <div class="icon">💊</div>
-          <p>Select a medication from the list<br>or press <strong>Random</strong> to get started.</p>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <script src="study.js"></script>

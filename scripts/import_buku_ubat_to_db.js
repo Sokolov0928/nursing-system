@@ -132,27 +132,27 @@ function main() {
       const { indikasi, sideEffects } = extractIndikasiAndSideEffects(b);
       return {
         name: b.name,
-        usage: indikasi,
+        indications: indikasi,
         side_effects: sideEffects,
       };
     })
     .filter((r) => r.name);
 
   // Build an UPDATE FROM (VALUES ...) to fill missing fields.
-  // Only set usage/side_effects if incoming value is non-empty.
+  // Only set indications/side_effects if incoming value is non-empty.
   const valuesSql = rows
-    .map((r) => `(${sqlDollarQuote(r.name)}, ${sqlDollarQuote(r.usage)}, ${sqlDollarQuote(r.side_effects)})`)
+    .map((r) => `(${sqlDollarQuote(r.name)}, ${sqlDollarQuote(r.indications)}, ${sqlDollarQuote(r.side_effects)})`)
     .join(',\n  ');
 
   const sql = `
-WITH incoming(name, usage, side_effects) AS (
+WITH incoming(name, indications, side_effects) AS (
   VALUES
   ${valuesSql}
 ),
 updated AS (
   UPDATE medications m
   SET
-    usage = CASE WHEN incoming.usage <> '' THEN incoming.usage ELSE m.usage END,
+    indications = CASE WHEN incoming.indications <> '' THEN incoming.indications ELSE m.indications END,
     side_effects = CASE WHEN incoming.side_effects <> '' THEN incoming.side_effects ELSE m.side_effects END
   FROM incoming
   WHERE lower(m.name) = lower(incoming.name)

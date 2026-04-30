@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Papan Pemuka – Sistem Kejururawatan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #f4f6fb;
+      --card:         #ffffff;
+      --border:       #e4e9f0;
+      --text:         #2d3a4a;
+      --muted:        #7a8a99;
+      --blue:         #0284c7;
+      --blue-light:   #e0f2fe;
+      --blue-glow:    rgba(2,132,199,0.22);
+      --teal:         #0d9488;
+      --teal-light:   #ccfbf1;
+      --teal-glow:    rgba(13,148,136,0.22);
+      --indigo:       #4f46e5;
+      --indigo-light: #e0e7ff;
+      --indigo-glow:  rgba(79,70,229,0.22);
+      --green:        #10b981;
+      --shadow-sm:    0 2px 8px rgba(0,0,0,0.05);
+      --shadow-md:    0 6px 20px rgba(0,0,0,0.08);
+      --shadow-lg:    0 16px 40px rgba(0,0,0,0.12);
+    }
+
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:0; }
+
+    /* ═══════════════════════════════════════════════════
+       HERO — background image layer
+       ═══════════════════════════════════════════════════
+       HOW TO ADD YOUR OWN BACKGROUND IMAGE:
+       1. Place your image (e.g. hospital.jpg) inside your
+          project folder (same folder as this HTML file).
+       2. In .hero below, uncomment the background-image line
+          and replace 'your-background.jpg' with your filename.
+       3. Adjust background-size / background-position if needed.
+    */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 0 40px 80px;
+
+      /* ── Colour fallback (always visible) ── */
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 60%, #0d4f6e 100%);
+
+      
+      background-image: url('background.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      
+    }
+
+    /* Dark overlay — makes text readable over any photo */
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(10, 20, 40, 0.82) 0%,
+        rgba(13, 50, 80, 0.75) 60%,
+        rgba(10, 60, 80, 0.70) 100%
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Grid texture */
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Glowing orbs */
+    .hero-orb1 {
+      position: absolute; top: -80px; right: -60px;
+      width: 360px; height: 360px;
+      background: radial-gradient(circle, rgba(2,132,199,0.2) 0%, transparent 70%);
+      pointer-events: none; z-index: 0;
+    }
+    .hero-orb2 {
+      position: absolute; bottom: -40px; left: 20%;
+      width: 240px; height: 240px;
+      background: radial-gradient(circle, rgba(13,148,136,0.15) 0%, transparent 70%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── Navbar ── */
+    .hero-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      position: relative; z-index: 1; margin-bottom: 36px; padding-top: 28px;
+    }
+    .logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+    .logo-icon {
+      width:40px; height:40px; background:linear-gradient(135deg,#0284c7,#0d9488);
+      border-radius:10px; display:flex; align-items:center; justify-content:center;
+      font-size:1.2rem; box-shadow:0 4px 12px rgba(2,132,199,0.35);
+    }
+    .logo-text { font-family:'DM Serif Display',serif; font-size:1.15rem; color:#fff; }
+    .logo-text span { color:#7dd3fc; }
+    .nav-links { display:flex; gap:6px; }
+    .nav-links a {
+      color:rgba(255,255,255,0.65); text-decoration:none; font-size:0.85rem;
+      font-weight:500; padding:7px 14px; border-radius:8px; transition:all 0.2s;
+    }
+    .nav-links a:hover { background:rgba(255,255,255,0.1); color:#fff; }
+    .nav-links a.active { background:rgba(255,255,255,0.14); color:#fff; }
+
+    /* ── Hero body: profile left, text right ── */
+    .hero-body {
+      position: relative; z-index: 1;
+      display: flex;
+      align-items: flex-end;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       PROFILE PICTURE
+       HOW TO CHANGE YOUR PROFILE PICTURE:
+       1. Place your photo (e.g. profile.jpg) in the same
+          folder as this HTML file.
+       2. Find the <img id="profile-img"> tag below.
+       3. Change src="images/profile-placeholder.svg"
+          to src="your-photo.jpg" (or any image URL).
+       4. The image will be displayed as a circle, 90×90px.
+    */
+    .profile-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .profile-ring {
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.35);
+      padding: 3px;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    #profile-img {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+    }
+    .profile-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
+      text-align: center;
+      white-space: nowrap;
+    }
+    .profile-role {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.45);
+      text-align: center;
+      margin-top: -4px;
+    }
+
+    /* Hero text */
+    .hero-text { flex: 1; min-width: 200px; }
+    .hero-text h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.2rem; color: #fff; line-height: 1.2; margin-bottom: 8px;
+    }
+    .hero-text h1 span { color: #7dd3fc; }
+    .hero-text p { color: rgba(255,255,255,0.55); font-size: 0.92rem; line-height: 1.6; }
+
+    .status-line { display:flex; align-items:center; gap:6px; margin-top:10px; }
+    .status-dot {
+      width:8px; height:8px; border-radius:50%; background:var(--green); flex-shrink:0;
+      box-shadow:0 0 0 3px rgba(16,185,129,0.25);
+    }
+    .status-dot.offline { background:#ef4444; box-shadow:0 0 0 3px rgba(239,68,68,0.25); }
+    #server-status { font-size:0.8rem; color:rgba(255,255,255,0.45); }
+
+    /* ── Main content ── */
+    .main { padding:0 40px 56px; max-width:1100px; margin:0 auto; }
+    @media (max-width:700px) {
+      .hero { padding:0 20px 60px; }
+      .main { padding:0 20px 48px; }
+      .hero-text h1 { font-size:1.7rem; }
+      .profile-ring { width:70px; height:70px; }
+    }
+
+    /* ── Stat cards ── */
+    .stats-row {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:16px;
+      margin-top:-44px; margin-bottom:36px; position:relative; z-index:10;
+    }
+    @media (max-width:700px) { .stats-row { grid-template-columns:1fr; margin-top:-20px; } }
+
+    .stat-card {
+      background:var(--card); border-radius:14px; padding:20px 22px;
+      box-shadow:var(--shadow-md); border:1px solid var(--border);
+      display:flex; align-items:center; gap:16px;
+      animation:riseUp 0.5s ease both;
+    }
+    .stat-card:nth-child(2) { animation-delay:0.08s; }
+    .stat-card:nth-child(3) { animation-delay:0.16s; }
+    @keyframes riseUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+    .stat-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0; }
+    .stat-icon.blue   { background:var(--blue-light); }
+    .stat-icon.teal   { background:var(--teal-light); }
+    .stat-icon.indigo { background:var(--indigo-light); }
+    .stat-value { font-size:1.9rem; font-weight:700; color:var(--text); line-height:1; margin-bottom:4px; }
+    .stat-label { font-size:0.82rem; color:var(--muted); font-weight:500; }
+
+    /* ── Section title ── */
+    .section-title {
+      font-size:0.75rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:1px; color:var(--muted); margin-bottom:14px;
+    }
+
+    /* ── Feature nav cards ── */
+    .feature-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:36px; }
+    @media (max-width:700px) { .feature-grid { grid-template-columns:1fr; } }
+
+    .feature-card {
+      background:var(--card); border-radius:16px; padding:26px 24px;
+      box-shadow:var(--shadow-sm); border:1px solid var(--border);
+      text-decoration:none; color:var(--text);
+      display:flex; flex-direction:column; gap:14px;
+      position:relative; overflow:hidden;
+      transition:transform 0.25s cubic-bezier(0.23,1,0.32,1), box-shadow 0.25s;
+      animation:riseUp 0.5s ease both;
+    }
+    .feature-card:nth-child(2) { animation-delay:0.1s; }
+    .feature-card:nth-child(3) { animation-delay:0.2s; }
+    .feature-card::after {
+      content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+      width:0; height:0; border-radius:50%; opacity:0;
+      transition:all 0.7s cubic-bezier(0.23,1,0.32,1); pointer-events:none;
+    }
+    .feature-card:hover { transform:translateY(-5px); }
+    .feature-card:hover::after { width:400px; height:400px; opacity:1; }
+    .feature-card:active { transform:scale(0.98); }
+
+    .feature-card.blue   { border-top:3px solid var(--blue); }
+    .feature-card.blue::after   { background:var(--blue-glow); }
+    .feature-card.blue:hover    { box-shadow:0 16px 40px var(--blue-glow); }
+    .feature-card.teal   { border-top:3px solid var(--teal); }
+    .feature-card.teal::after   { background:var(--teal-glow); }
+    .feature-card.teal:hover    { box-shadow:0 16px 40px var(--teal-glow); }
+    .feature-card.indigo { border-top:3px solid var(--indigo); }
+    .feature-card.indigo::after { background:var(--indigo-glow); }
+    .feature-card.indigo:hover  { box-shadow:0 16px 40px var(--indigo-glow); }
+
+    .feature-card-icon { width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; position:relative; z-index:1; }
+    .blue   .feature-card-icon { background:var(--blue-light); }
+    .teal   .feature-card-icon { background:var(--teal-light); }
+    .indigo .feature-card-icon { background:var(--indigo-light); }
+    .feature-card-body { position:relative; z-index:1; }
+    .feature-card-body h3 { font-size:1.05rem; font-weight:700; margin-bottom:6px; color:var(--text); }
+    .feature-card-body p  { font-size:0.84rem; color:var(--muted); line-height:1.55; }
+    .feature-card-arrow { position:absolute; bottom:22px; right:22px; font-size:1.1rem; opacity:0.25; transition:opacity 0.2s, transform 0.2s; z-index:1; }
+    .feature-card:hover .feature-card-arrow { opacity:0.7; transform:translate(3px,-3px); }
+
+    /* ── Bottom panels ── */
+    .bottom-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    @media (max-width:700px) { .bottom-grid { grid-template-columns:1fr; } }
+
+    .panel {
+      background:var(--card); border-radius:16px; padding:22px 24px;
+      box-shadow:var(--shadow-sm); border:1px solid var(--border);
+      animation:riseUp 0.5s 0.25s ease both;
+    }
+    .panel-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+    .panel-header h3 { font-size:0.95rem; font-weight:700; color:var(--text); }
+    .panel-header a { font-size:0.8rem; font-weight:600; color:var(--blue); text-decoration:none; padding:4px 10px; border-radius:6px; transition:background 0.18s; }
+    .panel-header a:hover { background:var(--blue-light); }
+
+    /* Recent medication rows */
+    .med-row { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #f1f5f9; }
+    .med-row:last-child { border-bottom:none; padding-bottom:0; }
+    .med-img {
+      width:40px; height:40px; border-radius:10px; background:var(--bg);
+      border:1px solid var(--border); flex-shrink:0;
+      display:flex; align-items:center; justify-content:center; font-size:1.2rem; overflow:hidden;
+    }
+    .med-img img { width:100%; height:100%; object-fit:cover; border-radius:9px; }
+    .med-info { flex:1; min-width:0; }
+    .med-info .name { font-size:0.88rem; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .med-info .indications-preview { font-size:0.76rem; color:var(--muted); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .med-badge { font-size:0.72rem; font-weight:700; padding:3px 9px; border-radius:999px; background:var(--blue-light); color:var(--blue); white-space:nowrap; }
+
+    /* How-to tips */
+    .tip-item { display:flex; gap:12px; padding:10px 0; border-bottom:1px solid #f1f5f9; }
+    .tip-item:last-child { border-bottom:none; }
+    .tip-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:0.95rem; flex-shrink:0; margin-top:2px; }
+    .tip-text .title { font-size:0.85rem; font-weight:600; margin-bottom:2px; }
+    .tip-text .desc  { font-size:0.78rem; color:var(--muted); line-height:1.5; }
+
+    /* Skeleton */
+    .skel { background:linear-gradient(90deg,#f1f5f9 25%,#e8edf3 50%,#f1f5f9 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:6px; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════ HERO ═══════════ -->
+  <div class="hero">
+    <!-- Layers: overlay → grid → orbs (all behind content) -->
+    <div class="hero-overlay"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-orb1"></div>
+    <div class="hero-orb2"></div>
+
+    <!-- Navbar -->
+    <div class="hero-nav">
+      <div class="logo">
+        <div class="logo-icon">🏥</div>
+        <div class="logo-text">Sistem <span>Kejururawatan</span></div>
+      </div>
+      <nav class="nav-links">
+        <a href="dashboard.html" class="active">🏠 Utama</a>
+        <a href="index.html">💊 Ubatan</a>
+        <a href="study.html">📚 Ulangkaji</a>
+        <a href="quiz.html">🧠 Kuiz</a>
+      </nav>
+    </div>
+
+    <!-- Profile + greeting -->
+    <div class="hero-body">
+
+      <!-- ════════════════════════════════════════════
+           PROFILE PICTURE — HOW TO CHANGE:
+           Replace src below with your image path.
+           e.g.  src="profile.jpg"
+                 src="images/myphoto.png"
+                 src="https://example.com/photo.jpg"
+           ════════════════════════════════════════════ -->
+      <div class="profile-block">
+        <div class="profile-ring">
+          <img id="profile-img"
+               src="profile.jpg"
+               alt="Gambar Profil"
+               onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22%230284c7%22/><text x=%2250%22 y=%2265%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2244%22>👩‍⚕️</text></svg>'" />
+        </div>
+        <div class="profile-name" id="profile-name">Jururawat Amanina </div>
+        <div class="profile-role">Pelajar Perubatan</div>
+      </div>
+
+      <div class="hero-text">
+        <h1>Selamat Datang,<br><span id="hero-greeting">Jururawat.</span></h1>
+        <p>Platform rujukan ubatan, ulangkaji, dan kuiz anda dalam satu tempat.</p>
+        <div class="status-line">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="server-status">Menghubungi pelayan…</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════ MAIN ═══════════ -->
+  <div class="main">
+
+    <!-- Stat cards (overlapping hero) -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon blue">💊</div>
+        <div>
+          <div class="stat-value" id="stat-meds">—</div>
+          <div class="stat-label">Jumlah Ubatan</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon teal">📖</div>
+        <div>
+          <div class="stat-value">Ulangkaji</div>
+          <div class="stat-label">Mod Pembelajaran</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon indigo">🎯</div>
+        <div>
+          <div class="stat-value">Kuiz</div>
+          <div class="stat-label">Uji Pengetahuan</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature nav cards -->
+    <div class="section-title">Navigasi</div>
+    <div class="feature-grid">
+      <a href="index.html" class="feature-card blue">
+        <div class="feature-card-icon">💊</div>
+        <div class="feature-card-body">
+          <h3>Ubatan</h3>
+          <p>Tambah, edit dan cari pangkalan data ubatan anda. Muat naik gambar untuk setiap ubatan.</p>
+        </div>
+        <div class="feature-card-arrow">↗</div>
+      </a>
+      <a href="study.html" class="feature-card teal">
+        <div class="feature-card-icon">📚</div>
+        <div class="feature-card-body">
+          <h3>Ulangkaji</h3>
+          <p>Semak ubatan dengan mod kabur-untuk-dedah. Sembunyikan kegunaan atau kesan sampingan untuk menguji diri.</p>
+        </div>
+        <div class="feature-card-arrow">↗</div>
+      </a>
+      <a href="quiz.html" class="feature-card indigo">
+        <div class="feature-card-icon">🧠</div>
+        <div class="feature-card-body">
+          <h3>Kuiz</h3>
+          <p>Jawab soalan pelbagai pilihan berdasarkan pangkalan data ubatan anda. Maklum balas segera.</p>
+        </div>
+        <div class="feature-card-arrow">↗</div>
+      </a>
+    </div>
+
+    <!-- Bottom: recent meds + how-to guide -->
+    <div class="bottom-grid">
+
+      <div class="panel">
+        <div class="panel-header">
+          <h3>Ubatan Terkini</h3>
+          <a href="index.html">Lihat semua →</a>
+        </div>
+        <div id="recent-meds">
+          <!-- skeleton rows while loading -->
+          <div class="med-row"><div class="med-img skel"></div><div class="med-info"><div class="skel" style="height:12px;width:60%;margin-bottom:6px;border-radius:4px;"></div><div class="skel" style="height:10px;width:40%;border-radius:4px;"></div></div></div>
+          <div class="med-row"><div class="med-img skel"></div><div class="med-info"><div class="skel" style="height:12px;width:50%;margin-bottom:6px;border-radius:4px;"></div><div class="skel" style="height:10px;width:35%;border-radius:4px;"></div></div></div>
+          <div class="med-row"><div class="med-img skel"></div><div class="med-info"><div class="skel" style="height:12px;width:65%;margin-bottom:6px;border-radius:4px;"></div><div class="skel" style="height:10px;width:45%;border-radius:4px;"></div></div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h3>Cara Penggunaan</h3></div>
+
+        <div class="tip-item">
+          <div class="tip-icon" style="background:var(--blue-light);">💊</div>
+          <div class="tip-text">
+            <div class="title">Tambah Ubatan</div>
+            <div class="desc">Pergi ke Ubatan, isi nama, kegunaan, kesan sampingan dan URL gambar. Masukkan setiap perkara pada baris baru untuk format peluru.</div>
+          </div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-icon" style="background:var(--teal-light);">📚</div>
+          <div class="tip-text">
+            <div class="title">Mod Ulangkaji</div>
+            <div class="desc">Gunakan togol sembunyikan untuk mengaburkan Kegunaan atau Kesan Sampingan — cara terbaik untuk mengingat.</div>
+          </div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-icon" style="background:var(--indigo-light);">🧠</div>
+          <div class="tip-text">
+            <div class="title">Ambil Kuiz</div>
+            <div class="desc">Jawab soalan pelbagai pilihan yang dijana daripada pangkalan data ubatan anda.</div>
+          </div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-icon" style="background:#fef9c3;">🔒</div>
+          <div class="tip-text">
+            <div class="title">Buka Kunci Pengeditan</div>
+            <div class="desc">Togol suis iOS dalam bar alat Ubatan untuk memaparkan butang Edit dan Padam pada setiap kad.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:3000';
+
+    function escHtml(s) {
+      return (s ?? '').toString()
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function medIcon(med) {
+      if (med.image_url)
+        return `<div class="med-img"><img src="${escHtml(med.image_url)}" alt="${escHtml(med.name)}" onerror="this.parentElement.textContent='💊'"></div>`;
+      return `<div class="med-img">💊</div>`;
+    }
+
+    async function loadDashboard() {
+      try {
+        const res = await fetch(`${API}/medications`);
+        if (!res.ok) throw new Error(`${res.status}`);
+
+        const meds = await res.json();
+        const list = Array.isArray(meds) ? meds : [];
+
+        // Server status
+        document.getElementById('server-status').textContent = 'Pelayan disambungkan';
+        document.getElementById('status-dot').classList.remove('offline');
+
+        // Stat
+        document.getElementById('stat-meds').textContent = list.length;
+
+        // Recent meds (last 5, newest first)
+        const recent   = [...list].reverse().slice(0, 5);
+        const recentEl = document.getElementById('recent-meds');
+
+        if (recent.length === 0) {
+          recentEl.innerHTML = `
+            <div style="text-align:center;padding:28px 0;color:var(--muted);font-size:0.88rem;">
+              <div style="font-size:1.8rem;margin-bottom:8px;">💊</div>
+              Tiada ubatan lagi.
+              <a href="index.html" style="color:var(--blue);font-weight:600;"> Tambah sekarang →</a>
+            </div>`;
+          return;
+        }
+
+        recentEl.innerHTML = recent.map(med => {
+          const firstIndications = (med.indications ?? '').split(/[\n;]/)[0].trim();
+          const badge      = firstIndications.split(' ').slice(0,2).join(' ') || 'Ubatan';
+          return `
+            <div class="med-row">
+              ${medIcon(med)}
+              <div class="med-info">
+                <div class="name">${escHtml(med.name)}</div>
+                <div class="indications-preview">${escHtml(firstIndications || 'Tiada maklumat kegunaan')}</div>
+              </div>
+              <span class="med-badge">${escHtml(badge)}</span>
+            </div>`;
+        }).join('');
+
+      } catch (e) {
+        document.getElementById('server-status').textContent = 'Pelayan tidak aktif — sila mulakan backend anda';
+        document.getElementById('status-dot').classList.add('offline');
+        document.getElementById('stat-meds').textContent = '—';
+        document.getElementById('recent-meds').innerHTML = `
+          <div style="text-align:center;padding:28px 0;color:var(--muted);font-size:0.85rem;">
+            <div style="font-size:1.8rem;margin-bottom:8px;">⚠️</div>
+            Tidak dapat menghubungi pelayan.<br>
+            <span style="font-size:0.8rem;">Pastikan backend anda berjalan pada port 3000.</span>
+          </div>`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadDashboard);
+  </script>
+
+</body>
+</html>
