@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'https://nursing-system.onrender.com';
 
 // ── State ─────────────────────────────────────────────────────────────────────
 let questions    = [];
