@@ -6,13 +6,14 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// ── Database ──────────────────────────────────────────────────────────────────
+// -- Database
 const pool = new Pool({
-  user:     process.env.PGUSER     || 'admin',
-  host:     process.env.PGHOST     || 'localhost',
-  database: process.env.PGDATABASE || 'nursing_db',
-  password: process.env.PGPASSWORD || 'admin123',
-  port:     Number(process.env.PGPORT) || 5432,
+  user:       process.env.PGUSER     || 'admin',
+  host:       process.env.PGHOST     || 'localhost',
+  database:   process.env.PGDATABASE || 'nursing_db',
+  password:   process.env.PGPASSWORD || 'admin123',
+  port:       Number(process.env.PGPORT) || 5432,
+  ssl: { rejectUnauthorized: false }  // <-- This is the magic line for Aiven
 });
 
 // ── Utility ───────────────────────────────────────────────────────────────────
